@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import TableBS from "react-bootstrap/Table";
-import ModalAlterar from "../modal/ModalAlterar"; // Certifique-se de que o caminho está correto
+import ModalAlterar from "../modal/ModalAlterar";
 import Button from "react-bootstrap/esm/Button";
+import Search from "../search/Search";
 
 export default function Table() {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -15,6 +17,7 @@ export default function Table() {
     try {
       const res = await axios.get("http://localhost:8800/api/products");
       setProducts(res.data.products);
+      setFilteredProducts(res.data.products);
     } catch (error) {
       setError(error);
     } finally {
@@ -27,13 +30,30 @@ export default function Table() {
   }, []);
 
   const handleShowModal = (product) => {
-    setSelectedProduct(product); // Definindo o produto selecionado
-    setShowModal(true); // Abrindo o modal
+    setSelectedProduct(product);
+    setShowModal(true);
   };
 
   const handleCloseModal = () => {
-    setShowModal(false); // Fechando o modal
-    setSelectedProduct(null); // Limpando o produto selecionado
+    setShowModal(false);
+    setSelectedProduct(null);
+  };
+
+  const refreshTable = () => {
+    buscaProdutos();
+  };
+
+  const handleSearch = (searchTerm, categoryTerm) => {
+    const filtered = products.filter((product) => {
+      const matchesName = product.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesCategory = product.category
+        .toLowerCase()
+        .includes(categoryTerm.toLowerCase());
+      return matchesName && matchesCategory;
+    });
+    setFilteredProducts(filtered);
   };
 
   if (loading) return <p>Carregando...</p>;
@@ -41,7 +61,8 @@ export default function Table() {
 
   return (
     <>
-      <TableBS stripped>
+      <Search refreshTable={refreshTable} onSearch={handleSearch} />
+      <TableBS striped>
         <thead>
           <tr>
             <th>Nome</th>
@@ -52,7 +73,7 @@ export default function Table() {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <tr key={product.id}>
               <td>{product.name}</td>
               <td>{product.category}</td>
@@ -70,11 +91,11 @@ export default function Table() {
           ))}
         </tbody>
       </TableBS>
-
       <ModalAlterar
         show={showModal}
         handleClose={handleCloseModal}
         product={selectedProduct}
+        refreshTable={refreshTable}
       />
     </>
   );

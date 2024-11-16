@@ -13,10 +13,17 @@ function ModalExclui({ product, onDeleteSuccess }) {
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:8800/api/products/${product.id}`);
+
+      // Exibir alerta de sucesso
+      alert("Produto excluído com sucesso!");
+
+      // Executa a função de callback se fornecida
       if (onDeleteSuccess) onDeleteSuccess();
+
       handleClose();
     } catch (error) {
       console.error("Erro ao excluir produto", error);
+      alert("Erro ao excluir produto!");
     }
   };
 
@@ -30,7 +37,7 @@ function ModalExclui({ product, onDeleteSuccess }) {
         <ModalBS.Header closeButton>
           <ModalBS.Title>Excluir produto</ModalBS.Title>
         </ModalBS.Header>
-        <ModalBS.Body>Deseja excluir esse produto?</ModalBS.Body>
+        <ModalBS.Body>Deseja realmente excluir este produto?</ModalBS.Body>
         <ModalBS.Footer>
           <Button variant="danger" onClick={handleDelete}>
             Excluir

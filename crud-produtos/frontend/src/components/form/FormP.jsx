@@ -1,26 +1,26 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 
-function FormP() {
+function FormP({ onAddProduct }) {
+  // Recebe a função onAddProduct do componente pai
   const [validated, setValidated] = useState(false);
   const [formData, setFormData] = useState({
-    name: "", // nome do produto
-    category: "", // categoria do produto
-    description: "", // descrição do produto
-    price: "", // preço do produto
-    amount: "", // quantidade do produto
+    name: "",
+    category: "",
+    description: "",
+    price: "",
+    amount: "",
   });
 
-  // Função para lidar com a mudança dos campos
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Função para enviar o formulário
   const handleSubmit = async (event) => {
     const form = event.currentTarget;
     event.preventDefault();
@@ -30,7 +30,6 @@ function FormP() {
 
     setValidated(true);
 
-    // Validação simples
     if (
       !formData.name ||
       !formData.category ||
@@ -42,7 +41,6 @@ function FormP() {
     }
 
     if (form.checkValidity()) {
-      // Verificar os dados antes de enviar
       console.log("Enviando dados para a API: ", formData);
 
       try {
@@ -51,12 +49,13 @@ function FormP() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData), // Envia os dados como JSON
+          body: JSON.stringify(formData),
         });
 
-        const data = await response.json(); // Resposta da API
+        const data = await response.json();
         if (response.ok) {
           alert("Produto cadastrado com sucesso!");
+          onAddProduct(); // Chama a função para atualizar a tabela
         } else {
           alert("Erro ao cadastrar produto: " + data.message);
         }

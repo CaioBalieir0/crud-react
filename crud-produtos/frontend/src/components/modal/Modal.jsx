@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import ModalBS from "react-bootstrap/Modal";
 import Form from "../form/FormP";
 import Button from "react-bootstrap/Button";
 
-function Example() {
+function Example({ refreshTable }) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -20,7 +21,8 @@ function Example() {
           <ModalBS.Title>Cadastrar Produto</ModalBS.Title>
         </ModalBS.Header>
         <ModalBS.Body>
-          <Form />
+          <Form onAddProduct={refreshTable} />{" "}
+          {/* Passando refreshTable para o Form */}
         </ModalBS.Body>
       </ModalBS>
     </>
